@@ -75,13 +75,6 @@ Select a game category?
 Type the number and hit 'enter'
 """))
 
-print(f"selected category: {categories[selected_category]['name']} ")
-print("""
-Lets get started...
-You have 5 lives, Dont Kill Jimmy!
----------------------------------------
-""")
-
 # Function to mask the word, replacing letters with underscores ('_')
 def mask_word(word):
     masked = ""
@@ -104,19 +97,43 @@ def reveal_letters(word, masked_word, guess):
     return result
 
 random_word = random.choice(categories[selected_category]['words'])
-masked = mask_word(random_word)
+masked_work = mask_word(random_word)
+revealed_word = masked_work
 current_stage = 0
 
+print(f"selected category: {categories[selected_category]['name']} ")
+print(f"""
+*************************************
+Lets get started...
+You have 5 lives, Dont Kill Jimmy!
+*************************************
+{hangman_stages.HANGMAN_STAGES[current_stage]}
+{masked_work}
+""")
 
+# Loop - Continue game if user hasn't guessed incorrectly for 6 times
 while current_stage < 6:
+
+    letter_guess = input("Guess a letter: ").upper()
+    revealed_word = reveal_letters(random_word, revealed_word, letter_guess)
+
+
+    letter_exists_in_masked_word = (letter_guess in revealed_word)
+
+    if not letter_exists_in_masked_word:
+        current_stage += 1
+
+    all_letters_unmasked = ("_" not in revealed_word)
+
     print(hangman_stages.HANGMAN_STAGES[current_stage])
-    print(masked)
+    print(revealed_word)
 
-    letter_guess = input("Guess a letter: ")
-
-    print(letter_guess)
-
-    current_stage += 1
-    print(current_stage)
+    if all_letters_unmasked:
+        print(f"CONGRATULATIONS! You guessed the word and SAVED JIMMY!")
+        break
 
 
+if current_stage == 6:
+    print(f"You Killed Jimmy! Game Over!")
+    print(hangman_stages.HANGMAN_STAGES[current_stage])
+    print(f"The word was: {random_word}")
